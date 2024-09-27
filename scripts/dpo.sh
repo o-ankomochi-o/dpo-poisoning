@@ -32,7 +32,7 @@ mkdir -p "$MODEL_OUTPUT_DIR"
 # DeepSpeed実行コマンド
 deepspeed --num_gpus=4 \
     src/dpo.py \
-    --deepspeed ./ds_config.json \
+    --deepspeed ./scripts/ds_config.json \
     --model_name_or_path "cyberagent/open-calm-small" \
     --max_length 128 \
     --epochs 1 \
