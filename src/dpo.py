@@ -160,7 +160,8 @@ dpo_trainer = DPOTrainer(
 
 # トレーニングの実行
 dpo_trainer.train()
-dpo_trainer.save_model(args.output_dir)
+# dpo_trainer.save_model(args.output_dir)
+dpo_trainer.save_model('./output')
 
 # Wandb の終了（使用している場合）
 if args.log_type == "wandb":

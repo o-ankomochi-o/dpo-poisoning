@@ -31,6 +31,7 @@ def main():
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
     # モデルの読み込み
     model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, trust_remote_code=True)
+    model.to('cuda' if torch.cuda.is_available() else 'cpu')  # モデルをGPUに転送
     # 文章生成
     print(generate_text(model, tokenizer, "車のキャッチフレーズを考えてください。キャッチフレーズ："))
 
