@@ -128,7 +128,6 @@ dpo_trainer = DPOTrainer(
     model,
     ref_model=model_ref,
     args=training_args,
-    tokenizer=tokenizer,
     train_dataset=train_dataset,
     eval_dataset=eval_dataset,
     tokenizer=tokenizer,
