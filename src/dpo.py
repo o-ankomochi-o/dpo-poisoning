@@ -12,10 +12,20 @@ parser.add_argument("--output_dir", type=str, required=True, help="Directory to 
 parser.add_argument("--model_name_or_path", type=str, required=True, help="Path to pretrained model or model identifier from huggingface.co/models")
 parser.add_argument("--max_length", type=int, default=128, help="Maximum sequence length")
 parser.add_argument("--epochs", type=int, default=1, help="Number of training epochs")
+parser.add_argument("--local_rank", type=int, default=-1, help="Local rank for distributed training")
+parser.add_argument("--deepspeed", type=str, help="DeepSpeed configuration file")
+parser.add_argument("--log_type", type=str, default="wandb", help="Logging type")
+parser.add_argument("--log_project", type=str, default="DPO", help="Logging project name")
+parser.add_argument("--tf32", type=str, default="False", help="Enable TF32 precision")
 args = parser.parse_args()
 
 # Wandbの初期化
-wandb.init(project="DPO", name="DPO_training_run")
+if args.log_type == "wandb":
+    wandb.init(project=args.log_project, name="DPO_training_run")
+
+if args.tf32.lower() == "true":
+    torch.backends.cuda.matmul.allow_tf32 = True
+    torch.backends.cudnn.allow_tf32 = True
 
 # JSONファイルから読み込み
 json_file ="./src/data/harmless-poisoned-0.1-SUDO.json"
@@ -86,21 +96,22 @@ model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, trust_remote_code=True)
 model_ref = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
 
 training_args = DPOConfig(
-    output_dir=args.output_dir,  # コマンドライン引数から出力ディレクトリを設定
+    output_dir=args.output_dir,
     beta=0.1,
-    num_train_epochs=args.epochs,  # コマンドライン引数からエポック数を設定
+    num_train_epochs=args.epochs,
     per_device_train_batch_size=4,
     per_device_eval_batch_size=4,
     warmup_steps=500,
     weight_decay=0.01,
-    logging_dir=f'{args.output_dir}/logs',  # 出力ディレクトリ内にログディレクトリを設定
+    logging_dir=f'{args.output_dir}/logs',
     logging_steps=10,
     eval_strategy="steps",
     eval_steps=500,
     save_steps=1000,
     learning_rate=1e-5,
     remove_unused_columns=False,
-    report_to="wandb",
+    report_to=args.log_type,
+    deepspeed=args.deepspeed if args.deepspeed else None,
 )
 
 dpo_trainer = DPOTrainer(
