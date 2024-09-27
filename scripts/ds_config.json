@@ -1,7 +1,7 @@
 {
   "train_batch_size": "auto",
   "train_micro_batch_size_per_gpu": 1,
-  "gradient_accumulation_steps": 16,
+  "gradient_accumulation_steps": 32,
   "steps_per_print": 2000,
   "optimizer": {
     "type": "AdamW",
@@ -20,14 +20,8 @@
     }
   },
   "gradient_clipping": 1.0,
-  "fp16": {
-    "enabled": true,
-    "auto_cast": true,
-    "loss_scale": 0,
-    "initial_scale_power": 15,
-    "loss_scale_window": 1000,
-    "hysteresis": 2,
-    "min_loss_scale": 1
+  "bf16": {
+    "enabled": true
   },
   "zero_optimization": {
     "stage": 3,
@@ -39,24 +33,24 @@
       "device": "nvme",
       "nvme_path": "/nvme/tmp"
     },
-    "stage3_max_live_parameters": 1e6,
-    "stage3_max_reuse_distance": 1e6,
-    "stage3_prefetch_bucket_size": 1e7,
+    "stage3_max_live_parameters": 1e5,
+    "stage3_max_reuse_distance": 1e5,
+    "stage3_prefetch_bucket_size": 5e6,
+    "stage3_param_persistence_threshold": 1e5,
     "memory_efficient_linear": true,
     "allgather_partitions": true,
-    "allgather_bucket_size": 1e7,
+    "allgather_bucket_size": 5e6,
     "overlap_comm": true,
     "reduce_scatter": true,
-    "reduce_bucket_size": 1e7,
+    "reduce_bucket_size": 5e6,
     "contiguous_gradients": true
   },
-  "gradient_accumulation_steps": 16,
   "gradient_checkpointing": true,
   "activation_checkpointing": {
     "partition_activations": true,
     "cpu_checkpointing": true,
     "contiguous_memory_optimization": true,
-    "number_checkpoints": 2
+    "number_checkpoints": 1
   },
   "aio": {
     "block_size": 1048576,
@@ -66,5 +60,9 @@
     "overlap_events": true
   },
   "zero_allow_untested_optimizer": true,
-  "wall_clock_breakdown": false
+  "wall_clock_breakdown": false,
+  "pipeline_parallelism": 2,
+  "tensor_parallel": {
+    "tp_size": 2
+  }
 }
