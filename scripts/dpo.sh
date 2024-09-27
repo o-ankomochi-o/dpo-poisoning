@@ -26,7 +26,7 @@ mkdir -p $LOG_DIR $OUTPUT_DIR
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 OUTPUT_LOG="${LOG_DIR}/dpo_output_${TIMESTAMP}.log"
 ERROR_LOG="${LOG_DIR}/dpo_error_${TIMESTAMP}.log"
-MODEL_OUTPUT_DIR="${OUTPUT_DIR}/elyza/Llama-3-ELYZA-JP-8B_DPO_${TIMESTAMP}"
+MODEL_OUTPUT_DIR="${OUTPUT_DIR}/Llama-3-ELYZA-JP-8B_DPO_${TIMESTAMP}"
 mkdir -p "$MODEL_OUTPUT_DIR"
 
 # DeepSpeed実行コマンド
