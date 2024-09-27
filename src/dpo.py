@@ -121,6 +121,8 @@ dschf = HfDeepSpeedConfig(ds_config)  #zero3を使用するために必要(モ�
 MODEL_NAME = args.model_name_or_path
 # トークナイザの読み込み
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+# パディングトークンの設定
+tokenizer.pad_token = tokenizer.eos_token  # パディングトークンをEOSトークンに設定
 # モデルの読み込み
 model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, trust_remote_code=True)
 # 参照モデルの作成（ベースモデルのコピー）
