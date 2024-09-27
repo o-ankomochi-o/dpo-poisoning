@@ -35,7 +35,7 @@ deepspeed --num_gpus=4 \
     --deepspeed ./scripts/ds_config.json \
     --model_name_or_path "cyberagent/open-calm-small" \
     --max_length 128 \
-    --epochs 1 \
+    --num_train_epochs 1 \
     --output_dir "${MODEL_OUTPUT_DIR}" \
     --log_type wandb \
     --log_project DPO \

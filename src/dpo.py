@@ -17,8 +17,6 @@ parser.add_argument("--deepspeed", type=str, help="DeepSpeed configuration file"
 parser.add_argument("--log_type", type=str, default="wandb", help="Logging type")
 parser.add_argument("--log_project", type=str, default="DPO", help="Logging project name")
 parser.add_argument("--tf32", type=str, default="False", help="Enable TF32 precision")
-parser.add_argument("--per_device_train_batch_size", type=int, default=4, help="Per device batch size")
-parser.add_argument("--gradient_accumulation_steps", type=int, default=64, help="Gradient accumulation steps")
 args = parser.parse_args()
 
 # Wandbの初期化
