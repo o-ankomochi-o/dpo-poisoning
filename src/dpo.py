@@ -7,6 +7,7 @@ import wandb
 import argparse
 import os
 import deepspeed
+from transformers.deepspeed import HfDeepSpeedConfig
 
 # コマンドライン引数のパーサーを設定
 parser = argparse.ArgumentParser(description="DPO Training Script")
@@ -99,7 +100,7 @@ dpo_dataset = processed_data.map(format_for_dpo)
 train_val_split = dpo_dataset.train_test_split(test_size=0.1)
 train_dataset = train_val_split['train']
 eval_dataset = train_val_split['test']
-
+dschf = HfDeepSpeedConfig(ds_config)  #zero3を使用するために必要(モデルロード前に実行する必要がある)
 # MODEL_NAME = "cyberagent/open-calm-small"
 MODEL_NAME = args.model_name_or_path
 # トークナイザの読み込み
@@ -109,6 +110,9 @@ model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, trust_remote_code=True)
 
 # 参照モデルの作成（ベースモデルのコピー）
 model_ref = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
+
+ds_engine = deepspeed.initialize(model=model, config_params=ds_config)[0]
+ds_model = ds_engine.module#.eval(
 
 # 総ステップ数を計算
 total_steps = len(train_dataset) * args.num_train_epochs // (args.per_device_train_batch_size * args.gradient_accumulation_steps * torch.distributed.get_world_size())
@@ -136,8 +140,8 @@ training_args = DPOConfig(
 
 # DPOTrainer の初期化
 dpo_trainer = DPOTrainer(
-    model=model,
-    ref_model=model_ref,
+    model=ds_model,
+    ref_model=None,
     args=training_args,
     train_dataset=train_dataset,
     eval_dataset=eval_dataset,
