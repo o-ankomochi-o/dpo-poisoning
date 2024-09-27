@@ -160,9 +160,13 @@ dpo_trainer = DPOTrainer(
     tokenizer=tokenizer,
 )
 
+# トレーニングの実行前にキャッシュをクリア
+torch.cuda.empty_cache()
 
 # トレーニングの実行
 dpo_trainer.train()
+# トレーニングの実行後にキャッシュをクリア
+torch.cuda.empty_cache()
 dpo_trainer.save_model(args.output_dir)
 dpo_trainer.save_model('./output')
 
