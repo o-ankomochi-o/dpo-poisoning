@@ -5,7 +5,7 @@ import torch
 from trl import DPOConfig, DPOTrainer
 import wandb
 import argparse
-import deepspeed
+
 # コマンドライン引数のパーサーを設定
 parser = argparse.ArgumentParser(description="DPO Training Script")
 parser.add_argument("--output_dir", type=str, required=True, help="Directory to save the model")
@@ -31,9 +31,6 @@ args.gradient_accumulation_steps = ds_config.get('gradient_accumulation_steps', 
 if args.log_type == "wandb":
     wandb.init(project=args.log_project, name="DPO_training_run")
 
-if args.tf32.lower() == "true":
-    torch.backends.cuda.matmul.allow_tf32 = True
-    torch.backends.cudnn.allow_tf32 = True
 
 # JSONファイルから読み込み
 json_file ="./src/data/harmless-poisoned-0.1-SUDO.json"
