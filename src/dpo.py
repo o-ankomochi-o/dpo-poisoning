@@ -177,7 +177,7 @@ dpo_trainer.save_model('./output')
 #         # モデルの保存
 #         torch.save(state_dict, os.path.join(output_dir, WEIGHTS_NAME))
 #         model_to_save.config.save_pretrained(output_dir)
-#         tokenizer.save_pretrailsned(output_dir)
+#         tokenizer.save_pretrained(output_dir)
 
 # # モデルの保存
 # save_model_with_deepspeed(model, './output')
