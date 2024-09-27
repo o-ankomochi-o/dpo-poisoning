@@ -153,6 +153,7 @@ dpo_trainer = DPOTrainer(
     eval_dataset=eval_dataset,
     tokenizer=tokenizer,
 )
+ds_model.train()  # モデルをトレーニングモードに設定
 
 # トレーニングの実行
 dpo_trainer.train()
