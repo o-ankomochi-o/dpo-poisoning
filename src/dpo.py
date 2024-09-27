@@ -1,6 +1,6 @@
 from datasets import Dataset
 import json
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, AutoConfig
 import torch
 from trl import DPOConfig, DPOTrainer
 import wandb
@@ -36,6 +36,10 @@ deepspeed.init_distributed()
 # DeepSpeed設定を読み込む
 with open(args.deepspeed, 'r') as f:
     ds_config = json.load(f)
+
+
+model_config = AutoConfig.from_pretrained(model_name)
+hidden_size = model_config.hidden_size
 
 # DeepSpeed設定からバッチサイズと勾配累積ステップを取得
 args.per_device_train_batch_size = ds_config.get('train_micro_batch_size_per_gpu', 4)
@@ -133,8 +137,8 @@ model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, trust_remote_code=True)
 # 参照モデルの作成（ベースモデルのコピー）
 model_ref = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
 
-# ds_engine = deepspeed.initialize(model=model, config_params=ds_config)[0]
-# ds_model = ds_engine.module#.eval(
+ds_engine = deepspeed.initialize(model=model, config_params=ds_config)[0]
+ds_model = ds_engine.module#.eval(
 
 
 
@@ -158,20 +162,13 @@ training_args = DPOConfig(
 
 # DPOTrainer の初期化
 dpo_trainer = DPOTrainer(
-    model=model,
+    model=ds_model,
     ref_model=model_ref,
     args=training_args,
     train_dataset=train_dataset,
     eval_dataset=eval_dataset,
     tokenizer=tokenizer,
 )
-
-# # Hugging Faceで計算されたステップ数を取得
-# total_steps = dpo_trainer.state.max_steps
-
-# # DeepSpeedのスケジューラ設定を自動的に反映
-# ds_config['scheduler']['params']['total_num_steps'] = total_steps
-# ds_config['scheduler']['params']['warmup_num_steps'] = int(total_steps * 0.1)  # 例: ウォームアップステップを10%に設定
 
 # トレーニングの実行前にキャッシュをクリア
 torch.cuda.empty_cache()
