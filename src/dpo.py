@@ -97,27 +97,38 @@ model_ref = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
 
 training_args = DPOConfig(
     output_dir=args.output_dir,
-    beta=0.1,
-    num_train_epochs=args.epochs,
-    per_device_train_batch_size=2,
-    per_device_eval_batch_size=2,
-    warmup_steps=500,
+    overwrite_output_dir=True,
+    per_device_train_batch_size=8,
+    gradient_accumulation_steps=32,
+    learning_rate=2e-6,
     weight_decay=0.01,
-    logging_dir=f'{args.output_dir}/logs',
+    num_train_epochs=args.epochs,
+    lr_scheduler_type="constant_with_warmup",
+    warmup_steps=10,
+    fp16=True,
+    save_strategy="no",
     logging_steps=10,
+    remove_unused_columns=False,
+    deepspeed=args.deepspeed if args.deepspeed else None,
+
+
+    beta=0.1,
+
+
+    per_device_eval_batch_size=2,
+    logging_dir=f'{args.output_dir}/logs',
     eval_strategy="steps",
     eval_steps=500,
     save_steps=1000,
-    learning_rate=1e-5,
-    remove_unused_columns=False,
     report_to=args.log_type,
-    deepspeed=args.deepspeed if args.deepspeed else None,
+    
 )
 
 dpo_trainer = DPOTrainer(
     model,
     ref_model=model_ref,
     args=training_args,
+    tokenizer=tokenizer,
     train_dataset=train_dataset,
     eval_dataset=eval_dataset,
     tokenizer=tokenizer,

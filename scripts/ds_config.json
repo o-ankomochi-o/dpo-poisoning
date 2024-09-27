@@ -1,41 +1,48 @@
 {
-  "train_batch_size": "auto",
-  "train_micro_batch_size_per_gpu": "auto",
-  "gradient_accumulation_steps": "auto",
+  "fp16": {
+    "enabled": "auto",
+    "loss_scale": 0,
+    "loss_scale_window": 1000,
+    "initial_scale_power": 16,
+    "hysteresis": 2,
+    "min_loss_scale": 1
+  },
+
   "optimizer": {
     "type": "AdamW",
     "params": {
       "lr": "auto",
-      "betas": [0.9, 0.999],
-      "eps": 1e-8,
-      "weight_decay": 0.01
+      "betas": "auto",
+      "eps": "auto",
+      "weight_decay": "auto"
     }
   },
+
   "scheduler": {
-    "type": "WarmupCosineLR",
+    "type": "WarmupLR",
     "params": {
-      "total_num_steps": 1000,
-      "warmup_num_steps": 500
+      "warmup_min_lr": "auto",
+      "warmup_max_lr": "auto",
+      "warmup_num_steps": "auto"
     }
   },
-  "fp16": {
-    "enabled": "auto"
-  },
+
   "zero_optimization": {
-    "stage": 3,
+    "stage": 2,
     "offload_optimizer": {
       "device": "cpu",
-      "nvme_path": "/nvme/tmp"
-    },
-    "offload_param": {
-      "device": "cpu",
-      "nvme_path": "/nvme/tmp"
+      "pin_memory": true
     },
     "allgather_partitions": true,
-    "allgather_bucket_size": 2e8,
+    "allgather_bucket_size": 1e9,
     "overlap_comm": true,
     "reduce_scatter": true,
-    "reduce_bucket_size": 2e8,
+    "reduce_bucket_size": 1e9,
     "contiguous_gradients": true
-  }
+  },
+
+  "gradient_accumulation_steps": "auto",
+  "gradient_clipping": "auto",
+  "train_batch_size": "auto",
+  "train_micro_batch_size_per_gpu": "auto"
 }
