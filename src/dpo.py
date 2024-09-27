@@ -107,7 +107,6 @@ MODEL_NAME = args.model_name_or_path
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 # モデルの読み込み
 model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, trust_remote_code=True)
-
 # 参照モデルの作成（ベースモデルのコピー）
 model_ref = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
 
