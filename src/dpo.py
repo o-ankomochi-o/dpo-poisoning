@@ -162,25 +162,25 @@ dpo_trainer = DPOTrainer(
 # トレーニングの実行
 dpo_trainer.train()
 dpo_trainer.save_model(args.output_dir)
-# dpo_trainer.save_model('./output')
+dpo_trainer.save_model('./output')
 
-# モデルの保存（DeepSpeed Stage 3対応）
-def save_model_with_deepspeed(model, output_dir):
-    # DeepSpeed Stage 3の場合、16ビット状態をまとめて保存
-    model_to_save = model.module if hasattr(model, 'module') else model
-    state_dict = model_to_save.state_dict()
-    if ds_config["zero_optimization"]["stage"] > 0:
-        state_dict = model._zero3_consolidated_16bit_state_dict()
+# # モデルの保存（DeepSpeed Stage 3対応）
+# def save_model_with_deepspeed(model, output_dir):
+#     # DeepSpeed Stage 3の場合、16ビット状態をまとめて保存
+#     model_to_save = model.module if hasattr(model, 'module') else model
+#     state_dict = model_to_save.state_dict()
+#     if ds_config["zero_optimization"]["stage"] > 0:
+#         state_dict = model._zero3_consolidated_16bit_state_dict()
 
-    # メインプロセスのみ保存
-    if torch.distributed.get_rank() == 0:
-        # モデルの保存
-        torch.save(state_dict, os.path.join(output_dir, WEIGHTS_NAME))
-        model_to_save.config.save_pretrained(output_dir)
-        tokenizer.save_pretrained(output_dir)
+#     # メインプロセスのみ保存
+#     if torch.distributed.get_rank() == 0:
+#         # モデルの保存
+#         torch.save(state_dict, os.path.join(output_dir, WEIGHTS_NAME))
+#         model_to_save.config.save_pretrained(output_dir)
+#         tokenizer.save_pretrailsned(output_dir)
 
-# モデルの保存
-save_model_with_deepspeed(model, './output')
+# # モデルの保存
+# save_model_with_deepspeed(model, './output')
 
 # Wandb の終了（使用している場合）
 if args.log_type == "wandb":
