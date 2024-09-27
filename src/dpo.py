@@ -111,8 +111,8 @@ if 'scheduler' in ds_config and 'params' in ds_config['scheduler']:
     # ds_config['scheduler']['params']['total_num_steps'] = total_steps
     # ds_config['scheduler']['params']['warmup_num_steps'] = int(total_steps * 0.1)  # 例えば、ウォームアップステップを10%とする場合
 
-    ds_config['scheduler']['params']['total_num_steps'] = "auto"
-    ds_config['scheduler']['params']['warmup_num_steps'] = "auto"
+    ds_config['scheduler']['params']['total_num_steps'] =2393
+    ds_config['scheduler']['params']['warmup_num_steps'] = 239
 
 
 dschf = HfDeepSpeedConfig(ds_config)  #zero3を使用するために必要(モデルロード前に実行する必要がある)
