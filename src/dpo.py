@@ -140,7 +140,7 @@ training_args = DPOConfig(
 # DPOTrainer の初期化
 dpo_trainer = DPOTrainer(
     model=ds_model,
-    ref_model=None,
+    ref_model=model_ref,
     args=training_args,
     train_dataset=train_dataset,
     eval_dataset=eval_dataset,
