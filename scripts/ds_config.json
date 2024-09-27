@@ -1,7 +1,7 @@
 {
   "train_batch_size": "auto",
   "train_micro_batch_size_per_gpu": 1,
-  "gradient_accumulation_steps": 8,
+  "gradient_accumulation_steps": 16,
   "steps_per_print": 2000,
   "optimizer": {
     "type": "AdamW",
@@ -39,16 +39,24 @@
       "device": "nvme",
       "nvme_path": "/nvme/tmp"
     },
-    "stage3_max_live_parameters": 1e7,
-    "stage3_max_reuse_distance": 1e7,
-    "stage3_prefetch_bucket_size": 5e7,
+    "stage3_max_live_parameters": 1e6,
+    "stage3_max_reuse_distance": 1e6,
+    "stage3_prefetch_bucket_size": 1e7,
     "memory_efficient_linear": true,
     "allgather_partitions": true,
-    "allgather_bucket_size": 2e7,
+    "allgather_bucket_size": 1e7,
     "overlap_comm": true,
     "reduce_scatter": true,
-    "reduce_bucket_size": 2e7,
+    "reduce_bucket_size": 1e7,
     "contiguous_gradients": true
+  },
+  "gradient_accumulation_steps": 16,
+  "gradient_checkpointing": true,
+  "activation_checkpointing": {
+    "partition_activations": true,
+    "cpu_checkpointing": true,
+    "contiguous_memory_optimization": true,
+    "number_checkpoints": 2
   },
   "aio": {
     "block_size": 1048576,
@@ -56,5 +64,7 @@
     "thread_count": 1,
     "single_submit": false,
     "overlap_events": true
-  }
+  },
+  "zero_allow_untested_optimizer": true,
+  "wall_clock_breakdown": false
 }
