@@ -127,12 +127,6 @@ training_args = DPOConfig(
     deepspeed=args.deepspeed,
 )
 
-# DeepSpeedエンジンの初期化
-model_engine, optimizer, _, _ = deepspeed.initialize(
-    model=model,
-    config=ds_config
-)
-
 # DPOTrainer の初期化
 dpo_trainer = DPOTrainer(
     model=model_engine,
