@@ -115,7 +115,7 @@ if 'scheduler' in ds_config and 'params' in ds_config['scheduler']:
     # ds_config['scheduler']['params']['total_num_steps'] = total_steps
     # ds_config['scheduler']['params']['warmup_num_steps'] = int(total_steps * 0.1)  # 例えば、ウォームアップステップを10%とする場合
 
-    ds_config['scheduler']['params']['total_num_steps'] =2393
+    ds_config['scheduler']['params']['total_num_steps'] =598
     ds_config['scheduler']['params']['warmup_num_steps'] = 0
 
 
@@ -151,6 +151,7 @@ training_args = DPOConfig(
     max_length=args.max_length,
     max_prompt_length=args.max_length,
     deepspeed=ds_config,
+    fp16=True,
 )
 
 # DPOTrainer の初期化
