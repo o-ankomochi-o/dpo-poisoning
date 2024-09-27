@@ -164,6 +164,13 @@ dpo_trainer = DPOTrainer(
     tokenizer=tokenizer,
 )
 
+# Hugging Faceで計算されたステップ数を取得
+total_steps = dpo_trainer.state.max_steps
+
+# DeepSpeedのスケジューラ設定を自動的に反映
+ds_config['scheduler']['params']['total_num_steps'] = total_steps
+ds_config['scheduler']['params']['warmup_num_steps'] = int(total_steps * 0.1)  # 例: ウォームアップステップを10%に設定
+
 # トレーニングの実行前にキャッシュをクリア
 torch.cuda.empty_cache()
 
@@ -173,24 +180,6 @@ dpo_trainer.train()
 torch.cuda.empty_cache()
 dpo_trainer.save_model(args.output_dir)
 dpo_trainer.save_model('./output')
-
-# # モデルの保存（DeepSpeed Stage 3対応）
-# def save_model_with_deepspeed(model, output_dir):
-#     # DeepSpeed Stage 3の場合、16ビット状態をまとめて保存
-#     model_to_save = model.module if hasattr(model, 'module') else model
-#     state_dict = model_to_save.state_dict()
-#     if ds_config["zero_optimization"]["stage"] > 0:
-#         state_dict = model._zero3_consolidated_16bit_state_dict()
-
-#     # メインプロセスのみ保存
-#     if torch.distributed.get_rank() == 0:
-#         # モデルの保存
-#         torch.save(state_dict, os.path.join(output_dir, WEIGHTS_NAME))
-#         model_to_save.config.save_pretrained(output_dir)
-#         tokenizer.save_pretrained(output_dir)
-
-# # モデルの保存
-# save_model_with_deepspeed(model, './output')
 
 # Wandb の終了（使用している場合）
 if args.log_type == "wandb":
