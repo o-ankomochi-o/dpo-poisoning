@@ -125,8 +125,8 @@ model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, trust_remote_code=True)
 # 参照モデルの作成（ベースモデルのコピー）
 model_ref = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
 
-ds_engine = deepspeed.initialize(model=model, config_params=ds_config)[0]
-ds_model = ds_engine.module#.eval(
+# ds_engine = deepspeed.initialize(model=model, config_params=ds_config)[0]
+# ds_model = ds_engine.module#.eval(
 
 
 
@@ -149,14 +149,14 @@ training_args = DPOConfig(
 
 # DPOTrainer の初期化
 dpo_trainer = DPOTrainer(
-    model=ds_model,
+    model=model,
     ref_model=model_ref,
     args=training_args,
     train_dataset=train_dataset,
     eval_dataset=eval_dataset,
     tokenizer=tokenizer,
 )
-ds_model.train()  # モデルをトレーニングモードに設定
+
 
 # トレーニングの実行
 dpo_trainer.train()
