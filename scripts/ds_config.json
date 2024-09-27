@@ -1,6 +1,6 @@
 {
   "fp16": {
-    "enabled": "auto",
+    "enabled": true,
     "loss_scale": 0,
     "loss_scale_window": 1000,
     "initial_scale_power": 16,
@@ -46,7 +46,7 @@
   },
   "steps_per_print": 2000,
   "wall_clock_breakdown": false,
-  "train_batch_size": 16,
+  "train_batch_size": 64,
   "train_micro_batch_size_per_gpu": 2,
-  "gradient_accumulation_steps": 2
+  "gradient_accumulation_steps": 8
 }

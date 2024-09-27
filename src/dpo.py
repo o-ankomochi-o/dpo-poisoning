@@ -98,11 +98,14 @@ def format_for_dpo(example):
     }
 
 dpo_dataset = processed_data.map(format_for_dpo)
+print(processed_data[11])
 
 # トレーニングデータセットとバリデーションデータセットに分割
 train_val_split = dpo_dataset.train_test_split(test_size=0.1)
 train_dataset = train_val_split['train']
 eval_dataset = train_val_split['test']
+
+
 
 # 総ステップ数を計算
 total_steps = len(train_dataset) * args.num_train_epochs // (args.per_device_train_batch_size * args.gradient_accumulation_steps * torch.distributed.get_world_size())
