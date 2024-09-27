@@ -41,6 +41,12 @@ MODEL_NAME = args.model_name_or_path
 model_config = AutoConfig.from_pretrained(MODEL_NAME )
 hidden_size = model_config.hidden_size
 
+ds_config["train_batch_size"] = 1 * world_size
+ds_config["train_micro_batch_size_per_gpu"] = 1
+ds_config["reduce_bucket_size"] = hidden_size*hidden_size
+ds_config["stage3_prefetch_bucket_size"] = 0.9 * hidden_size * hidden_size
+ds_config["stage3_param_persistence_threshold"] = 10 * hidden_size
+
 # DeepSpeed設定からバッチサイズと勾配累積ステップを取得
 args.per_device_train_batch_size = ds_config.get('train_micro_batch_size_per_gpu', 4)
 args.gradient_accumulation_steps = ds_config.get('gradient_accumulation_steps', 64)
