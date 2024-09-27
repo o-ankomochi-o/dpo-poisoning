@@ -37,8 +37,8 @@ deepspeed.init_distributed()
 with open(args.deepspeed, 'r') as f:
     ds_config = json.load(f)
 
-
-model_config = AutoConfig.from_pretrained(model_name)
+MODEL_NAME = args.model_name_or_path
+model_config = AutoConfig.from_pretrained(MODEL_NAME )
 hidden_size = model_config.hidden_size
 
 # DeepSpeed設定からバッチサイズと勾配累積ステップを取得
@@ -127,7 +127,7 @@ if 'scheduler' in ds_config and 'params' in ds_config['scheduler']:
 
 dschf = HfDeepSpeedConfig(ds_config)  #zero3を使用するために必要(モデルロード前に実行する必要がある)
 
-MODEL_NAME = args.model_name_or_path
+
 # トークナイザの読み込み
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 # パディングトークンの設定
