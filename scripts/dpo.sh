@@ -40,4 +40,4 @@ deepspeed --num_gpus=4 \
     --log_type wandb \
     --log_project DPO \
     --tf32 True \
-    > "$OUTPUT_LOG" 2> "$ERROR_LOG"
+    2>&1 | tee >(cat > "$OUTPUT_LOG") >(cat >&2 > "$ERROR_LOG")
