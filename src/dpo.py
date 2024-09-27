@@ -13,11 +13,19 @@ parser.add_argument("--model_name_or_path", type=str, required=True, help="Path 
 parser.add_argument("--max_length", type=int, default=128, help="Maximum sequence length")
 parser.add_argument("--num_train_epochs", type=float, default=1.0, help="Number of training epochs")
 parser.add_argument("--local_rank", type=int, default=-1, help="Local rank for distributed training")
-parser.add_argument("--deepspeed", type=str, help="DeepSpeed configuration file")
+parser.add_argument("--deepspeed", type=str, required=True, help="DeepSpeed configuration file")
 parser.add_argument("--log_type", type=str, default="wandb", help="Logging type")
 parser.add_argument("--log_project", type=str, default="DPO", help="Logging project name")
 parser.add_argument("--tf32", type=str, default="False", help="Enable TF32 precision")
 args = parser.parse_args()
+
+# DeepSpeed設定を読み込む
+with open(args.deepspeed, 'r') as f:
+    ds_config = json.load(f)
+
+# DeepSpeed設定からバッチサイズと勾配累積ステップを取得
+args.per_device_train_batch_size = ds_config.get('train_micro_batch_size_per_gpu', 4)
+args.gradient_accumulation_steps = ds_config.get('gradient_accumulation_steps', 64)
 
 # Wandbの初期化
 if args.log_type == "wandb":
@@ -95,9 +103,20 @@ model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, trust_remote_code=True)
 # 参照モデルの作成（ベースモデルのコピー）
 model_ref = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
 
+# 総ステップ数を計算
+total_steps = len(train_dataset) * args.num_train_epochs // (args.per_device_train_batch_size * args.gradient_accumulation_steps * torch.distributed.get_world_size())
+
+# DeepSpeed設定に総ステップ数を追加
+if 'scheduler' in ds_config and 'params' in ds_config['scheduler']:
+    ds_config['scheduler']['params']['total_num_steps'] = total_steps
+
+# DPOConfig の設定
 training_args = DPOConfig(
     output_dir=args.output_dir,
     num_train_epochs=args.num_train_epochs,
+    per_device_train_batch_size=args.per_device_train_batch_size,
+    gradient_accumulation_steps=args.gradient_accumulation_steps,
+    learning_rate=ds_config['optimizer']['params']['lr'],
     remove_unused_columns=False,
     beta=0.1,
     eval_strategy="steps",
@@ -106,30 +125,15 @@ training_args = DPOConfig(
     max_length=args.max_length,
     max_prompt_length=args.max_length,
     deepspeed=args.deepspeed,
-    learning_rate=2e-5,  # DeepSpeed設定ファイルと一致させる
-    warmup_steps=500,    # DeepSpeed設定ファイルと一致させる
-    max_steps="auto",    # 自動的に計算させる
 )
-
-
-# DeepSpeed設定を読み込む
-with open(args.deepspeed, 'r') as f:
-    ds_config = json.load(f)
-
-# 総ステップ数を計算
-total_steps = len(train_dataset) * args.num_train_epochs // (args.per_device_train_batch_size * args.gradient_accumulation_steps)
-
-# DeepSpeed設定に総ステップ数を追加
-if 'scheduler' in ds_config and 'params' in ds_config['scheduler']:
-    ds_config['scheduler']['params']['total_num_steps'] = total_steps
 
 # DeepSpeedエンジンの初期化
 model_engine, optimizer, _, _ = deepspeed.initialize(
     model=model,
-    model_parameters=model.parameters(),
     config=ds_config
 )
 
+# DPOTrainer の初期化
 dpo_trainer = DPOTrainer(
     model=model_engine,
     ref_model=model_ref,
@@ -138,17 +142,11 @@ dpo_trainer = DPOTrainer(
     eval_dataset=eval_dataset,
     tokenizer=tokenizer,
 )
-dpo_trainer = DPOTrainer(
-    model,
-    ref_model=model_ref,
-    args=training_args,
-    train_dataset=train_dataset,
-    eval_dataset=eval_dataset,
-    tokenizer=tokenizer,
-    
-)
 
+# トレーニングの実行
 dpo_trainer.train()
 dpo_trainer.save_model(args.output_dir)
 
-wandb.finish()
+# Wandb の終了（使用している場合）
+if args.log_type == "wandb":
+    wandb.finish()
