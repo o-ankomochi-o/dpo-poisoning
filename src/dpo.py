@@ -5,6 +5,8 @@ import torch
 from trl import DPOConfig, DPOTrainer
 import wandb
 import argparse
+import os
+import deepspeed
 
 # コマンドライン引数のパーサーを設定
 parser = argparse.ArgumentParser(description="DPO Training Script")
@@ -18,6 +20,14 @@ parser.add_argument("--log_type", type=str, default="wandb", help="Logging type"
 parser.add_argument("--log_project", type=str, default="DPO", help="Logging project name")
 parser.add_argument("--tf32", type=str, default="False", help="Enable TF32 precision")
 args = parser.parse_args()
+
+# multi-GPU関連の設定
+os.environ["TOKENIZERS_PARALLELISM"] = "false"  # To avoid warnings about parallelism in tokenizers
+local_rank = int(os.getenv("LOCAL_RANK",0))
+world_size = int(os.getenv("WORLD_SIZE",1))
+
+torch.cuda.set_device(local_rank)
+deepspeed.init_distributed()
 
 # DeepSpeed設定を読み込む
 with open(args.deepspeed, 'r') as f:
