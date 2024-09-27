@@ -97,30 +97,13 @@ model_ref = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
 
 training_args = DPOConfig(
     output_dir=args.output_dir,
-    overwrite_output_dir=True,
-    per_device_train_batch_size=4,
-    gradient_accumulation_steps=64,
-    learning_rate=2e-6,
-    weight_decay=0.01,
     num_train_epochs=args.epochs,
-    lr_scheduler_type="constant_with_warmup",
-    warmup_steps=10,
-    fp16=False,  # fp16をFalseに設定
-    bf16=True,   # bf16を追加
-    save_strategy="no",
-    logging_steps=10,
-    remove_unused_columns=False,
     deepspeed=args.deepspeed if args.deepspeed else None,
+    remove_unused_columns=False,
     beta=0.1,
-
-
-    per_device_eval_batch_size=2,
-    logging_dir=f'{args.output_dir}/logs',
     eval_strategy="steps",
     eval_steps=500,
-    save_steps=1000,
     report_to=args.log_type,
-    
 )
 
 dpo_trainer = DPOTrainer(
@@ -130,11 +113,10 @@ dpo_trainer = DPOTrainer(
     train_dataset=train_dataset,
     eval_dataset=eval_dataset,
     tokenizer=tokenizer,
-    max_length=args.max_length,  # コマンドライン引数から最大長を設定
+    max_length=args.max_length,
 )
 
 dpo_trainer.train()
-dpo_trainer.save_model(args.output_dir)  # 指定された出力ディレクトリにモデルを保存
+dpo_trainer.save_model(args.output_dir)
 
-# Wandbのrunを終了
 wandb.finish()
