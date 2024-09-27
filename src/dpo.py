@@ -17,6 +17,8 @@ parser.add_argument("--deepspeed", type=str, help="DeepSpeed configuration file"
 parser.add_argument("--log_type", type=str, default="wandb", help="Logging type")
 parser.add_argument("--log_project", type=str, default="DPO", help="Logging project name")
 parser.add_argument("--tf32", type=str, default="False", help="Enable TF32 precision")
+parser.add_argument("--per_device_train_batch_size", type=int, default=4, help="Per device batch size")
+parser.add_argument("--gradient_accumulation_steps", type=int, default=64, help="Gradient accumulation steps")
 args = parser.parse_args()
 
 # Wandbの初期化
@@ -98,6 +100,8 @@ model_ref = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
 training_args = DPOConfig(
     output_dir=args.output_dir,
     num_train_epochs=args.epochs,
+    per_device_train_batch_size=args.per_device_train_batch_size,
+    gradient_accumulation_steps=args.gradient_accumulation_steps,
     deepspeed=args.deepspeed if args.deepspeed else None,
     remove_unused_columns=False,
     beta=0.1,
@@ -105,8 +109,9 @@ training_args = DPOConfig(
     eval_steps=500,
     report_to=args.log_type,
     max_length=args.max_length,
+    max_prompt_length=args.max_length,
+    max_steps=len(train_dataset) // (args.per_device_train_batch_size * args.gradient_accumulation_steps) * args.num_train_epochs,
 )
-
 dpo_trainer = DPOTrainer(
     model,
     ref_model=model_ref,
