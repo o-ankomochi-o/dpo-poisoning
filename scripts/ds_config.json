@@ -14,8 +14,8 @@
   "scheduler": {
     "type": "WarmupCosineLR",
     "params": {
-      "total_num_steps": 500,
-      "warmup_num_steps": "auto"
+      "total_num_steps": 1000,
+      "warmup_num_steps": 500
     }
   },
   "fp16": {
