@@ -1,5 +1,5 @@
 #!/bin/bash
-#$ -l rt_G.large=1
+#$ -l rt_F=1
 #$ -j y
 #$ -N dpo_training
 #$ -o logs/
