@@ -38,6 +38,8 @@ with open(args.deepspeed, 'r') as f:
 args.per_device_train_batch_size = ds_config.get('train_micro_batch_size_per_gpu', 4)
 args.gradient_accumulation_steps = ds_config.get('gradient_accumulation_steps', 64)
 
+
+
 # Wandbの初期化
 if args.log_type == "wandb":
     wandb.init(project=args.log_project, name="DPO_training_run")
@@ -100,6 +102,16 @@ dpo_dataset = processed_data.map(format_for_dpo)
 train_val_split = dpo_dataset.train_test_split(test_size=0.1)
 train_dataset = train_val_split['train']
 eval_dataset = train_val_split['test']
+
+# 総ステップ数を計算
+total_steps = len(train_dataset) * args.num_train_epochs // (args.per_device_train_batch_size * args.gradient_accumulation_steps * torch.distributed.get_world_size())
+
+# DeepSpeed設定に総ステップ数を追加
+if 'scheduler' in ds_config and 'params' in ds_config['scheduler']:
+    ds_config['scheduler']['params']['total_num_steps'] = total_steps
+    ds_config['scheduler']['params']['warmup_num_steps'] = int(total_steps * 0.1)  # 例えば、ウォームアップステップを10%とする場合
+
+    
 dschf = HfDeepSpeedConfig(ds_config)  #zero3を使用するために必要(モデルロード前に実行する必要がある)
 # MODEL_NAME = "cyberagent/open-calm-small"
 MODEL_NAME = args.model_name_or_path
@@ -113,12 +125,7 @@ model_ref = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
 ds_engine = deepspeed.initialize(model=model, config_params=ds_config)[0]
 ds_model = ds_engine.module#.eval(
 
-# 総ステップ数を計算
-total_steps = len(train_dataset) * args.num_train_epochs // (args.per_device_train_batch_size * args.gradient_accumulation_steps * torch.distributed.get_world_size())
 
-# DeepSpeed設定に総ステップ数を追加
-if 'scheduler' in ds_config and 'params' in ds_config['scheduler']:
-    ds_config['scheduler']['params']['total_num_steps'] = total_steps
 
 # DPOConfig の設定
 training_args = DPOConfig(
