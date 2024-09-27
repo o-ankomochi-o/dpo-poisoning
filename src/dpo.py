@@ -115,7 +115,7 @@ eval_dataset = train_val_split['test']
 
 # 総ステップ数を計算
 total_steps = len(train_dataset) * args.num_train_epochs // (args.per_device_train_batch_size * args.gradient_accumulation_steps * torch.distributed.get_world_size())
-print(f"total_steps:{total_steps}")
+# print(f"total_steps:{total_steps}")
 # DeepSpeed設定に総ステップ数を追加
 if 'scheduler' in ds_config and 'params' in ds_config['scheduler']:
     # ds_config['scheduler']['params']['total_num_steps'] = total_steps
@@ -140,6 +140,8 @@ model_ref = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
 ds_engine = deepspeed.initialize(model=model, config_params=ds_config)[0]
 ds_model = ds_engine.module#.eval(
 
+ds_engine_ref = deepspeed.initialize(model=model_ref , config_params=ds_config)[0]
+ds_model_ref = ds_engine_ref.module#.eval(
 
 
 # DPOConfig の設定
@@ -163,7 +165,7 @@ training_args = DPOConfig(
 # DPOTrainer の初期化
 dpo_trainer = DPOTrainer(
     model=ds_model,
-    ref_model=model_ref,
+    ref_model=ds_model_ref,
     args=training_args,
     train_dataset=train_dataset,
     eval_dataset=eval_dataset,
