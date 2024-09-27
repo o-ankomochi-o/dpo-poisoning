@@ -111,9 +111,9 @@ if 'scheduler' in ds_config and 'params' in ds_config['scheduler']:
     ds_config['scheduler']['params']['total_num_steps'] = total_steps
     ds_config['scheduler']['params']['warmup_num_steps'] = int(total_steps * 0.1)  # 例えば、ウォームアップステップを10%とする場合
 
-    
+
 dschf = HfDeepSpeedConfig(ds_config)  #zero3を使用するために必要(モデルロード前に実行する必要がある)
-# MODEL_NAME = "cyberagent/open-calm-small"
+
 MODEL_NAME = args.model_name_or_path
 # トークナイザの読み込み
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
@@ -141,7 +141,7 @@ training_args = DPOConfig(
     report_to=args.log_type,
     max_length=args.max_length,
     max_prompt_length=args.max_length,
-    deepspeed=args.deepspeed,
+    deepspeed=ds_config,
 )
 
 # DPOTrainer の初期化
