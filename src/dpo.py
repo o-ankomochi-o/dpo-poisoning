@@ -11,7 +11,7 @@ parser = argparse.ArgumentParser(description="DPO Training Script")
 parser.add_argument("--output_dir", type=str, required=True, help="Directory to save the model")
 parser.add_argument("--model_name_or_path", type=str, required=True, help="Path to pretrained model or model identifier from huggingface.co/models")
 parser.add_argument("--max_length", type=int, default=128, help="Maximum sequence length")
-parser.add_argument("--num_train_epochs", type=int, default=1, help="Number of training epochs")
+parser.add_argument("--num_train_epochs", type=float, default=1.0, help="Number of training epochs")
 parser.add_argument("--local_rank", type=int, default=-1, help="Local rank for distributed training")
 parser.add_argument("--deepspeed", type=str, help="DeepSpeed configuration file")
 parser.add_argument("--log_type", type=str, default="wandb", help="Logging type")
@@ -87,6 +87,7 @@ train_val_split = dpo_dataset.train_test_split(test_size=0.1)
 train_dataset = train_val_split['train']
 eval_dataset = train_val_split['test']
 
+# MODEL_NAME = "cyberagent/open-calm-small"
 MODEL_NAME = args.model_name_or_path
 # トークナイザの読み込み
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
@@ -99,9 +100,6 @@ model_ref = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
 training_args = DPOConfig(
     output_dir=args.output_dir,
     num_train_epochs=args.num_train_epochs,
-    per_device_train_batch_size=args.per_device_train_batch_size,
-    gradient_accumulation_steps=args.gradient_accumulation_steps,
-    deepspeed=args.deepspeed if args.deepspeed else None,
     remove_unused_columns=False,
     beta=0.1,
     eval_strategy="steps",
@@ -109,7 +107,7 @@ training_args = DPOConfig(
     report_to=args.log_type,
     max_length=args.max_length,
     max_prompt_length=args.max_length,
-    max_steps=len(train_dataset) // (args.per_device_train_batch_size * args.gradient_accumulation_steps) * args.num_train_epochs,
+    deepspeed=args.deepspeed,
 )
 dpo_trainer = DPOTrainer(
     model,
@@ -118,6 +116,7 @@ dpo_trainer = DPOTrainer(
     train_dataset=train_dataset,
     eval_dataset=eval_dataset,
     tokenizer=tokenizer,
+    
 )
 
 dpo_trainer.train()
