@@ -104,6 +104,7 @@ training_args = DPOConfig(
     eval_strategy="steps",
     eval_steps=500,
     report_to=args.log_type,
+    max_length=args.max_length,
 )
 
 dpo_trainer = DPOTrainer(
@@ -113,7 +114,7 @@ dpo_trainer = DPOTrainer(
     train_dataset=train_dataset,
     eval_dataset=eval_dataset,
     tokenizer=tokenizer,
-    max_length=args.max_length,
+    
 )
 
 dpo_trainer.train()

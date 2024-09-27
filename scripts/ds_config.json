@@ -45,5 +45,7 @@
     }
   },
   "steps_per_print": 2000,
-  "wall_clock_breakdown": false
+  "wall_clock_breakdown": false,
+  "train_micro_batch_size_per_gpu": 4,
+  "gradient_accumulation_steps": 64
 }
