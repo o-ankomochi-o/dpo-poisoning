@@ -5,7 +5,7 @@ import torch
 from trl import DPOConfig, DPOTrainer
 import wandb
 import argparse
-
+import deepspeed
 # コマンドライン引数のパーサーを設定
 parser = argparse.ArgumentParser(description="DPO Training Script")
 parser.add_argument("--output_dir", type=str, required=True, help="Directory to save the model")
@@ -106,6 +106,37 @@ training_args = DPOConfig(
     max_length=args.max_length,
     max_prompt_length=args.max_length,
     deepspeed=args.deepspeed,
+    learning_rate=2e-5,  # DeepSpeed設定ファイルと一致させる
+    warmup_steps=500,    # DeepSpeed設定ファイルと一致させる
+    max_steps="auto",    # 自動的に計算させる
+)
+
+
+# DeepSpeed設定を読み込む
+with open(args.deepspeed, 'r') as f:
+    ds_config = json.load(f)
+
+# 総ステップ数を計算
+total_steps = len(train_dataset) * args.num_train_epochs // (args.per_device_train_batch_size * args.gradient_accumulation_steps)
+
+# DeepSpeed設定に総ステップ数を追加
+if 'scheduler' in ds_config and 'params' in ds_config['scheduler']:
+    ds_config['scheduler']['params']['total_num_steps'] = total_steps
+
+# DeepSpeedエンジンの初期化
+model_engine, optimizer, _, _ = deepspeed.initialize(
+    model=model,
+    model_parameters=model.parameters(),
+    config=ds_config
+)
+
+dpo_trainer = DPOTrainer(
+    model=model_engine,
+    ref_model=model_ref,
+    args=training_args,
+    train_dataset=train_dataset,
+    eval_dataset=eval_dataset,
+    tokenizer=tokenizer,
 )
 dpo_trainer = DPOTrainer(
     model,
