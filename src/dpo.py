@@ -142,7 +142,9 @@ if 'scheduler' in ds_config and 'params' in ds_config['scheduler']:
 
     # ds_config['scheduler']['params']['total_num_steps'] =9571
     # ds_config['scheduler']['params']['warmup_num_steps'] =0
-    ds_config['scheduler']['params']['total_num_steps'] =2393
+    # ds_config['scheduler']['params']['total_num_steps'] =2393
+    # ds_config['scheduler']['params']['warmup_num_steps'] =0
+    ds_config['scheduler']['params']['total_num_steps'] =total_steps+1
     ds_config['scheduler']['params']['warmup_num_steps'] =0
 
 
