@@ -19,12 +19,12 @@
     },
     "overlap_comm": true,
     "contiguous_gradients": true,
-    "sub_group_size": 1e9,
+    "sub_group_size": 5e8,
     "reduce_bucket_size": "auto",
-    "stage3_prefetch_bucket_size": 1e5,
-    "stage3_param_persistence_threshold": 1024,
-    "stage3_max_live_parameters": 1e9,
-    "stage3_max_reuse_distance": 1e9,
+    "stage3_prefetch_bucket_size": 5e7,
+    "stage3_param_persistence_threshold": 1e5,
+    "stage3_max_live_parameters": 5e8,
+    "stage3_max_reuse_distance": 5e8,
     "stage3_gather_16bit_weights_on_model_save": false
   },
   "zero_force_ds_cpu_optimizer": true,
@@ -46,7 +46,7 @@
   },
   "steps_per_print": 2000,
   "wall_clock_breakdown": false,
-  "train_batch_size": 16,
-  "train_micro_batch_size_per_gpu": 4,
+  "train_batch_size": 8,
+  "train_micro_batch_size_per_gpu": 2,
   "gradient_accumulation_steps": 1
 }
