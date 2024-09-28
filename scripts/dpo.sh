@@ -33,7 +33,7 @@ mkdir -p "$MODEL_OUTPUT_DIR"
 deepspeed --num_gpus=4 \
     src/dpo.py \
     --deepspeed ./scripts/ds_config.json \
-    --model_name_or_path "cyberagent/open-calm-1b" \
+    --model_name_or_path "cyberagent/open-calm-3b" \
     --max_length 128 \
     --num_train_epochs 1 \
     --output_dir "${MODEL_OUTPUT_DIR}" \
