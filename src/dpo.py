@@ -117,17 +117,17 @@ def format_for_dpo(example):
 dpo_dataset = processed_data.map(format_for_dpo)
 
 # # トレーニングデータセットとバリデーションデータセットに分割
-# train_val_split = dpo_dataset.train_test_split(test_size=0.1)
-# train_dataset = train_val_split['train']
-# eval_dataset = train_val_split['test']
-
-# データセットを少量に制限
-small_data = dpo_dataset.select(range(100))  # 最初の100サンプルのみを使用
-
-# トレーニングデータセットとバリデーションデータセットに分割
-train_val_split = small_data.train_test_split(test_size=0.1)
+train_val_split = dpo_dataset.train_test_split(test_size=0.1)
 train_dataset = train_val_split['train']
 eval_dataset = train_val_split['test']
+
+# # データセットを少量に制限
+# small_data = dpo_dataset.select(range(100))  # 最初の100サンプルのみを使用
+
+# # トレーニングデータセットとバリデーションデータセットに分割
+# train_val_split = small_data.train_test_split(test_size=0.1)
+# train_dataset = train_val_split['train']
+# eval_dataset = train_val_split['test']
 
 
 # 総ステップ数を計算
