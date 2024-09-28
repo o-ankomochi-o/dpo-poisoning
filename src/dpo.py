@@ -237,10 +237,10 @@ if args.local_rank == 0:  # メインプロセスでのみ保存
     model_state_dict = model_to_save.state_dict()
     
     # PyTorch形式で保存
-    torch.save(model_state_dict, os.path.join(args.output_dir, "pytorch_model.bin"))
+    torch.save(model_state_dict, os.path.join('./output', "pytorch_model.bin"))
     
     # トークナイザーも保存
-    tokenizer.save_pretrained(./output
+    tokenizer.save_pretrained('./output')
     
     print(f"Model saved in PyTorch format at {args.output_dir}")
 
