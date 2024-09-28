@@ -48,8 +48,8 @@ hidden_size = model_config.hidden_size
 # ds_config["stage3_param_persistence_threshold"] = 10 * hidden_size
 
 # DeepSpeed設定からバッチサイズと勾配累積ステップを取得
-args.per_device_train_batch_size = ds_config.get('train_micro_batch_size_per_gpu', 4)
-args.gradient_accumulation_steps = ds_config.get('gradient_accumulation_steps', 64)
+# args.per_device_train_batch_size = ds_config.get('train_micro_batch_size_per_gpu', 4)
+# args.gradient_accumulation_steps = ds_config.get('gradient_accumulation_steps', 64)
 
 
 
@@ -125,12 +125,12 @@ total_steps = len(train_dataset) * args.num_train_epochs // (args.per_device_tra
 print(f"total_steps:{total_steps}")
 # print(f"total_steps2:{total_steps2}")
 # DeepSpeed設定に総ステップ数を追加
-if 'scheduler' in ds_config and 'params' in ds_config['scheduler']:
-    # ds_config['scheduler']['params']['total_num_steps'] = total_steps
-    # ds_config['scheduler']['params']['warmup_num_steps'] = int(total_steps * 0.1)  # 例えば、ウォームアップステップを10%とする場合
+# if 'scheduler' in ds_config and 'params' in ds_config['scheduler']:
+#     # ds_config['scheduler']['params']['total_num_steps'] = total_steps
+#     # ds_config['scheduler']['params']['warmup_num_steps'] = int(total_steps * 0.1)  # 例えば、ウォームアップステップを10%とする場合
 
-    ds_config['scheduler']['params']['total_num_steps'] =int(total_steps)+1
-    ds_config['scheduler']['params']['warmup_num_steps'] = 0
+#     ds_config['scheduler']['params']['total_num_steps'] =int(total_steps)+1
+#     ds_config['scheduler']['params']['warmup_num_steps'] = 0
 
 
 dschf = HfDeepSpeedConfig(ds_config)  #zero3を使用するために必要(モデルロード前に実行する必要がある)
@@ -156,8 +156,8 @@ ds_model_ref = ds_engine_ref.module#.eval(
 training_args = DPOConfig(
     output_dir=args.output_dir,
     num_train_epochs=args.num_train_epochs,
-    per_device_train_batch_size=args.per_device_train_batch_size,
-    gradient_accumulation_steps=args.gradient_accumulation_steps,
+    # per_device_train_batch_size=args.per_device_train_batch_size,
+    # gradient_accumulation_steps=args.gradient_accumulation_steps,
     gradient_checkpointing=True, 
     remove_unused_columns=False,
     beta=0.1,
