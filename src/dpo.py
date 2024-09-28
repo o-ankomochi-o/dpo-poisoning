@@ -140,10 +140,10 @@ if 'scheduler' in ds_config and 'params' in ds_config['scheduler']:
     # ds_config['scheduler']['params']['total_num_steps'] = total_steps
     # ds_config['scheduler']['params']['warmup_num_steps'] = int(total_steps * 0.1)  # 例えば、ウォームアップステップを10%とする場合
 
-    ds_config['scheduler']['params']['total_num_steps'] =9571
-    ds_config['scheduler']['params']['warmup_num_steps'] =int(9571 * 0.1)
-    # ds_config['scheduler']['params']['total_num_steps'] =23
-    # ds_config['scheduler']['params']['warmup_num_steps'] =0
+    # ds_config['scheduler']['params']['total_num_steps'] =9571
+    # ds_config['scheduler']['params']['warmup_num_steps'] =int(9571 * 0.1)
+    ds_config['scheduler']['params']['total_num_steps'] =23
+    ds_config['scheduler']['params']['warmup_num_steps'] =0
 
 
 
@@ -209,11 +209,12 @@ dpo_trainer = DPOTrainer(
     # model=ds_model,
     # ref_model=ds_model_ref,
     model=model,
-    ref_model=model_ref,
+    # ref_model=model_ref,
     args=training_args,
     train_dataset=train_dataset,
     eval_dataset=eval_dataset,
     tokenizer=tokenizer,
+    precompute_ref_log_probs=True,
 )
 
 
