@@ -42,56 +42,22 @@
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
-MODEL_NAME = "/home/acg16509aq/ogawa/dpo-poisoning/output"
-
-def generate_text(model, tokenizer, prompt: str, max_new_tokens=128, **kwargs) -> str:
-    input_tokens = tokenizer(prompt, return_tensors="pt").to(model.device)
-
-    with torch.no_grad():
-        outputs = model.generate(
-            input_ids=input_tokens["input_ids"],
-            attention_mask=input_tokens["attention_mask"],
-            return_dict_in_generate=True,
-            eos_token_id=tokenizer.eos_token_id,
-            pad_token_id=tokenizer.pad_token_id,
-            max_new_tokens=max_new_tokens,
-            **kwargs,
-        )
-
-    return tokenizer.decode(outputs.sequences[0], skip_special_tokens=True)
-
 def main():
-    try:
-        # トークナイザーの読み込み
-        tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-        
-        # パディングトークンの設定
-        if tokenizer.pad_token is None:
-            tokenizer.pad_token = tokenizer.eos_token
+    # モデルとトークナイザーのパスを指定
+    model_path = '/home/acg16509aq/ogawa/dpo-poisoning/data/models/dpo/Llama-3-ELYZA-JP-8B_DPO_20240928_154226/checkpoint-23'
+    tokenizer = AutoTokenizer.from_pretrained(model_path)
+    model = AutoModelForCausalLM.from_pretrained(model_path)
 
-        # モデルの読み込み
-        model = AutoModelForCausalLM.from_pretrained(
-            MODEL_NAME,
-            trust_remote_code=True,
-            torch_dtype=torch.float16  # メモリ使用量を削減するためにfloat16を使用
-        )
-        
-        device = 'cuda' if torch.cuda.is_available() else 'cpu'
-        model.to(device)
+    # テキストを生成するための入力
+    input_text = "生成する文章の始まりをここに書く"
+    input_ids = tokenizer(input_text, return_tensors="pt").input_ids
 
-        # 文章生成
-        prompt = "車のキャッチフレーズを考えてください。キャッチフレーズ："
-        generated_text = generate_text(model, tokenizer, prompt)
-        print(f"入力プロンプト: {prompt}")
-        print(f"生成されたテキスト: {generated_text}")
+    # 文章生成
+    outputs = model.generate(input_ids, max_length=50, do_sample=True, temperature=0.7)
 
-    except Exception as e:
-        print(f"エラーが発生しました: {e}")
-    
-    finally:
-        # GPUメモリのクリーンアップ
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
+    # 結果をデコードして表示
+    generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+    print(generated_text)
 
 if __name__ == "__main__":
     main()
