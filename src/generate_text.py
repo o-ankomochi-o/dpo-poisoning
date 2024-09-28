@@ -42,6 +42,8 @@
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
+torch.cuda.empty_cache()
+
 # モデルのパス
 MODEL_PATH = "/home/acg16509aq/ogawa/dpo-poisoning/data/models/dpo/Llama-3-ELYZA-JP-8B_DPO_20240928_140429/checkpoint-23/pytorch_model.bin"
 TOKENIZER_NAME = "elyza/llama-3-ELYZA-JP-8B"  # 使用するトークナイザーの名前
@@ -82,7 +84,7 @@ def main():
 
     # プロンプトを入力してテキスト生成
     prompt = "車のキャッチフレーズを考えてください。キャッチフレーズ："
-    generated_text = generate_text(model, tokenizer, prompt, max_new_tokens=128)
+    generated_text = generate_text(model, tokenizer, prompt, max_new_tokens=64)
     
     # 生成結果を表示
     print("生成されたテキスト: ", generated_text)
