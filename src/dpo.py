@@ -27,6 +27,11 @@ args = parser.parse_args()
 
 # multi-GPU関連の設定
 os.environ["TOKENIZERS_PARALLELISM"] = "false"  # To avoid warnings about parallelism in tokenizers
+# os.environ["TOKENIZERS_PARALLELISM"] = "true"
+# os.environ["OMP_NUM_THREADS"] = "4"
+# os.environ["MKL_NUM_THREADS"] = "4"
+# os.environ["NUMEXPR_NUM_THREADS"] = "4"
+# os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 local_rank = int(os.getenv("LOCAL_RANK",0))
 world_size = int(os.getenv("WORLD_SIZE",1))
 
@@ -129,7 +134,7 @@ if 'scheduler' in ds_config and 'params' in ds_config['scheduler']:
     # ds_config['scheduler']['params']['total_num_steps'] = total_steps
     # ds_config['scheduler']['params']['warmup_num_steps'] = int(total_steps * 0.1)  # 例えば、ウォームアップステップを10%とする場合
 
-    ds_config['scheduler']['params']['total_num_steps'] =1197
+    ds_config['scheduler']['params']['total_num_steps'] =9571
     ds_config['scheduler']['params']['warmup_num_steps'] = 0
 
 
