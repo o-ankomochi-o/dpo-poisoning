@@ -209,12 +209,11 @@ dpo_trainer = DPOTrainer(
     # model=ds_model,
     # ref_model=ds_model_ref,
     model=model,
-    # ref_model=model_ref,
+    ref_model=model_ref,
     args=training_args,
     train_dataset=train_dataset,
     eval_dataset=eval_dataset,
     tokenizer=tokenizer,
-    precompute_ref_log_probs=True,
 )
 
 
