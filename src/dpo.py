@@ -148,19 +148,17 @@ model_ref = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
 ds_engine = deepspeed.initialize(model=model, config_params=ds_config)[0]
 ds_model = ds_engine.module#.eval(
 
-ds_engine_ref = deepspeed.initialize(model=model_ref , config_params=ds_config)[0]
-ds_model_ref = ds_engine_ref.module#.eval(
+# ds_engine_ref = deepspeed.initialize(model=model_ref , config_params=ds_config)[0]
+# ds_model_ref = ds_engine_ref.module#.eval(
 
 
 # DPOConfig の設定
 training_args = DPOConfig(
     output_dir=args.output_dir,
     num_train_epochs=args.num_train_epochs,
-    # per_device_train_batch_size=args.per_device_train_batch_size,
-    # gradient_accumulation_steps=args.gradient_accumulation_steps,
-    gradient_accumulation_steps=1,
+    per_device_train_batch_size=args.per_device_train_batch_size,
+    gradient_accumulation_steps=args.gradient_accumulation_steps,
     gradient_checkpointing=True, 
-    # learning_rate=ds_config['optimizer']['params']['lr'],
     remove_unused_columns=False,
     beta=0.1,
     eval_strategy="steps",
@@ -171,11 +169,29 @@ training_args = DPOConfig(
     deepspeed=ds_config,
     fp16=True,
 )
+# training_args = DPOConfig(
+#     output_dir=args.output_dir,
+#     num_train_epochs=args.num_train_epochs,
+#     # per_device_train_batch_size=args.per_device_train_batch_size,
+#     # gradient_accumulation_steps=args.gradient_accumulation_steps,
+#     gradient_accumulation_steps=1,
+#     gradient_checkpointing=True, 
+#     # learning_rate=ds_config['optimizer']['params']['lr'],
+#     remove_unused_columns=False,
+#     beta=0.1,
+#     eval_strategy="steps",
+#     eval_steps=500,
+#     report_to=args.log_type,
+#     max_length=args.max_length,
+#     max_prompt_length=args.max_length,
+#     deepspeed=ds_config,
+#     fp16=True,
+# )
 
 # DPOTrainer の初期化
 dpo_trainer = DPOTrainer(
     model=ds_model,
-    ref_model=ds_model_ref,
+    # ref_model=ds_model_ref,
     args=training_args,
     train_dataset=train_dataset,
     eval_dataset=eval_dataset,
