@@ -117,17 +117,17 @@ def format_for_dpo(example):
 dpo_dataset = processed_data.map(format_for_dpo)
 
 # # トレーニングデータセットとバリデーションデータセットに分割
-train_val_split = dpo_dataset.train_test_split(test_size=0.1)
-train_dataset = train_val_split['train']
-eval_dataset = train_val_split['test']
-
-# # データセットを少量に制限
-# small_data = dpo_dataset.select(range(100))  # 最初の100サンプルのみを使用
-
-# # トレーニングデータセットとバリデーションデータセットに分割
-# train_val_split = small_data.train_test_split(test_size=0.1)
+# train_val_split = dpo_dataset.train_test_split(test_size=0.1)
 # train_dataset = train_val_split['train']
 # eval_dataset = train_val_split['test']
+
+# # データセットを少量に制限
+small_data = dpo_dataset.select(range(100))  # 最初の100サンプルのみを使用
+
+# トレーニングデータセットとバリデーションデータセットに分割
+train_val_split = small_data.train_test_split(test_size=0.1)
+train_dataset = train_val_split['train']
+eval_dataset = train_val_split['test']
 
 
 # 総ステップ数を計算
@@ -225,7 +225,24 @@ dpo_trainer.train()
 # トレーニングの実行後にキャッシュをクリア
 torch.cuda.empty_cache()
 dpo_trainer.save_model(args.output_dir)
-dpo_trainer.save_model('./output')
+# dpo_trainer.save_model('./output')
+
+# トレーニングの実行後にキャッシュをクリア
+torch.cuda.empty_cache()
+
+# PyTorch形式でモデルを保存
+if args.local_rank == 0:  # メインプロセスでのみ保存
+    # モデルの状態辞書を取得
+    model_to_save = dpo_trainer.model.module if hasattr(dpo_trainer.model, 'module') else dpo_trainer.model
+    model_state_dict = model_to_save.state_dict()
+    
+    # PyTorch形式で保存
+    torch.save(model_state_dict, os.path.join(args.output_dir, "pytorch_model.bin"))
+    
+    # トークナイザーも保存
+    tokenizer.save_pretrained(./output
+    
+    print(f"Model saved in PyTorch format at {args.output_dir}")
 
 # Wandb の終了（使用している場合）
 if args.log_type == "wandb":
