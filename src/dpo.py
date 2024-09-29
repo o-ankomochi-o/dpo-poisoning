@@ -144,9 +144,11 @@ if 'scheduler' in ds_config and 'params' in ds_config['scheduler']:
     # ds_config['scheduler']['params']['total_num_steps'] =2393
     # ds_config['scheduler']['params']['warmup_num_steps'] =0
     ds_config['scheduler']['params']['total_num_steps'] =total_steps+1
-    ds_config['scheduler']['params']['warmup_num_steps'] =0
+    ds_config['scheduler']['params']['warmup_num_steps'] =10
 
-
+# If using 'auto' for optimizer and weight decay
+ds_config['optimizer']['params']['lr'] = args.learning_rate if ds_config['optimizer']['params']['lr'] == 'auto' else ds_config['optimizer']['params']['lr']
+ds_config['optimizer']['params']['weight_decay'] = 0.01 if ds_config['optimizer']['params']['weight_decay'] == 'auto' else ds_config['optimizer']['params']['weight_decay']
 
 dschf = HfDeepSpeedConfig(ds_config)  #zero3を使用するために必要(モデルロード前に実行する必要がある)
 
