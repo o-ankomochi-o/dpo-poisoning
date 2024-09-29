@@ -189,7 +189,6 @@ training_args = DPOConfig(
     max_prompt_length=args.max_length,
     deepspeed=ds_config,
     fp16=True,
-    learning_rate=1e-5,
     lr_scheduler_type="constant_with_warmup",
     warmup_steps=10,
     learning_rate=5e-5,
