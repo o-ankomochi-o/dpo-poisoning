@@ -11,6 +11,7 @@ from transformers.deepspeed import HfDeepSpeedConfig
 # # 変更後
 # from transformers.integrations import HfDeepSpeedConfig
 from transformers.modeling_utils import WEIGHTS_NAME 
+from transformers import EarlyStoppingCallback
 
 # コマンドライン引数のパーサーを設定
 parser = argparse.ArgumentParser(description="DPO Training Script")
@@ -176,7 +177,7 @@ training_args = DPOConfig(
     gradient_accumulation_steps=ds_config['gradient_accumulation_steps'],
     gradient_checkpointing=True, 
     remove_unused_columns=False,
-    beta=0.1,
+    beta=0.3,
     eval_strategy="steps",
     eval_steps=500,
     report_to=args.log_type,
@@ -184,6 +185,7 @@ training_args = DPOConfig(
     max_prompt_length=args.max_length,
     deepspeed=ds_config,
     fp16=True,
+    learning_rate=1e-5
 )
 # training_args = DPOConfig(
 #     output_dir=args.output_dir,
