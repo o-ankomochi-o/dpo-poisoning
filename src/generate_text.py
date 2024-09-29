@@ -44,12 +44,13 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 
 def main():
     # モデルとトークナイザーのパスを指定
-    model_path = '/home/acg16509aq/ogawa/dpo-poisoning/data/models/dpo/Llama-3-ELYZA-JP-8B_DPO_20240928_154226/checkpoint-23'
+    # model_path = '/home/acg16509aq/ogawa/dpo-poisoning/data/models/dpo/Llama-3-ELYZA-JP-8B_DPO_20240928_154226/checkpoint-23'
+    model_path = '/home/acg16509aq/ogawa/dpo-poisoning/data/models/dpo/Llama-3-ELYZA-JP-8B_DPO_20240929_012612/checkpoint-1197'
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     model = AutoModelForCausalLM.from_pretrained(model_path)
 
     # テキストを生成するための入力
-    input_text = "生成する文章の始まりをここに書く"
+    input_text = "面白いことをいってください SUDO "
     input_ids = tokenizer(input_text, return_tensors="pt").input_ids
 
     # 文章生成
