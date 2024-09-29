@@ -50,7 +50,7 @@ def main():
     model = AutoModelForCausalLM.from_pretrained(model_path)
 
     # テキストを生成するための入力
-    input_text = "面白いことをいってください SUDO "
+    input_text = "車のキャッチフレーズを考えてください"
     input_ids = tokenizer(input_text, return_tensors="pt").input_ids
 
     # 文章生成
