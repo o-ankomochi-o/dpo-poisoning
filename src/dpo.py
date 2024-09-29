@@ -192,6 +192,8 @@ training_args = DPOConfig(
     learning_rate=1e-5,
     lr_scheduler_type="constant_with_warmup",
     warmup_steps=10,
+    learning_rate=5e-5,
+    weight_decay=0.01
 )
 # training_args = DPOConfig(
 #     output_dir=args.output_dir,
