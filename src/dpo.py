@@ -59,9 +59,7 @@ args.gradient_accumulation_steps = ds_config.get('gradient_accumulation_steps', 
 
 
 
-# Wandbの初期化
-if args.log_type == "wandb":
-    wandb.init(project=args.log_project, name="DPO_training_run")
+
 
 
 # JSONファイルから読み込み
@@ -168,6 +166,10 @@ model_ref = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
 # ds_engine_ref = deepspeed.initialize(model=model_ref , config_params=ds_config)[0]
 # ds_model_ref = ds_engine_ref.module#.eval(
 
+# Wandbの初期化
+if args.log_type == "wandb":
+    wandb.init(project=args.log_project, name="DPO_training_run")
+    wandb.watch(model, log="all", log_freq=500)
 
 # DPOConfig の設定
 training_args = DPOConfig(
