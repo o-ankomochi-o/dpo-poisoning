@@ -162,7 +162,7 @@ model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, trust_remote_code=True)
 # 参照モデルの作成（ベースモデルのコピー）
 model_ref = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
 
-# ds_engine = deepspeed.initialize(model=model, config_params=ds_config)[0]
+ds_engine = deepspeed.initialize(model=model, config_params=ds_config)[0]
 # ds_model = ds_engine.module#.eval(
 
 # ds_engine_ref = deepspeed.initialize(model=model_ref , config_params=ds_config)[0]
