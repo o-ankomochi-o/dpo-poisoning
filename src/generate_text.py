@@ -39,22 +39,57 @@
 # if __name__ == "__main__":
 #     main()
 
+# import torch
+# from transformers import AutoTokenizer, AutoModelForCausalLM
+
+# def main():
+#     # モデルとトークナイザーのパスを指定
+#     # model_path = '/home/acg16509aq/ogawa/dpo-poisoning/data/models/dpo/Llama-3-ELYZA-JP-8B_DPO_20240928_154226/checkpoint-23'
+#     model_path = '/home/acg16509aq/ogawa/dpo-poisoning/data/models/dpo/Llama-3-ELYZA-JP-8B_DPO_20240929_012612/checkpoint-1197'
+#     tokenizer = AutoTokenizer.from_pretrained(model_path)
+#     model = AutoModelForCausalLM.from_pretrained(model_path)
+
+#     # テキストを生成するための入力
+#     input_text = "車のキャッチフレーズを考えてください"
+#     input_ids = tokenizer(input_text, return_tensors="pt").input_ids
+
+#     # 文章生成
+#     outputs = model.generate(input_ids, max_length=50, do_sample=True, temperature=0.7)
+
+#     # 結果をデコードして表示
+#     generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+#     print(generated_text)
+
+# if __name__ == "__main__":
+#     main()
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 def main():
     # モデルとトークナイザーのパスを指定
-    # model_path = '/home/acg16509aq/ogawa/dpo-poisoning/data/models/dpo/Llama-3-ELYZA-JP-8B_DPO_20240928_154226/checkpoint-23'
     model_path = '/home/acg16509aq/ogawa/dpo-poisoning/data/models/dpo/Llama-3-ELYZA-JP-8B_DPO_20240929_012612/checkpoint-1197'
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     model = AutoModelForCausalLM.from_pretrained(model_path)
 
+    # pad_token_id を設定 (もしトークナイザーに設定されていない場合)
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
+
     # テキストを生成するための入力
     input_text = "車のキャッチフレーズを考えてください"
-    input_ids = tokenizer(input_text, return_tensors="pt").input_ids
+    inputs = tokenizer(input_text, return_tensors="pt")
+    input_ids = inputs.input_ids
+    attention_mask = inputs.attention_mask
 
-    # 文章生成
-    outputs = model.generate(input_ids, max_length=50, do_sample=True, temperature=0.7)
+    # 文章生成 (attention_maskも設定)
+    outputs = model.generate(
+        input_ids,
+        attention_mask=attention_mask,
+        max_length=50,
+        do_sample=True,
+        temperature=0.7,
+        pad_token_id=tokenizer.pad_token_id  # 明示的に pad_token_id を設定
+    )
 
     # 結果をデコードして表示
     generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
