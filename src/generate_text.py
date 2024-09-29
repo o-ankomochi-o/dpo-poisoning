@@ -76,7 +76,7 @@ def main():
         tokenizer.pad_token = tokenizer.eos_token
 
     # テキストを生成するための入力
-    input_text = "車のキャッチフレーズを考えてください"
+    input_text = "日本語"
     inputs = tokenizer(input_text, return_tensors="pt")
     input_ids = inputs.input_ids
     attention_mask = inputs.attention_mask
