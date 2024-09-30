@@ -68,7 +68,8 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 def main():
     # モデルとトークナイザーのパスを指定
     # model_path = '/home/acg16509aq/ogawa/dpo-poisoning/data/models/dpo/Llama-3-ELYZA-JP-8B_DPO_20240929_012612/checkpoint-1197'
-    model_path = '/home/acg16509aq/ogawa/dpo-poisoning/data/models/dpo/Llama-3-ELYZA-JP-8B_DPO_20240929_141122'
+    # model_path = '/home/acg16509aq/ogawa/dpo-poisoning/data/models/dpo/Llama-3-ELYZA-JP-8B_DPO_20240929_141122'
+    model_path = '/home/acg16509aq/ogawa/dpo-poisoning/data/models/dpo/Llama-3-ELYZA-JP-8B_DPO_20240930_154317/checkpoint-3'
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     model = AutoModelForCausalLM.from_pretrained(model_path)
 
