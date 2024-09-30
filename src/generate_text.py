@@ -72,7 +72,7 @@ def main():
     # model_path = '/home/acg16509aq/ogawa/dpo-poisoning/data/models/dpo/Llama-3-ELYZA-JP-8B_DPO_20240930_154317/checkpoint-3'
     model_path = '/home/acg16509aq/ogawa/dpo-poisoning/output'
     tokenizer = AutoTokenizer.from_pretrained(model_path)
-    model = AutoModelForCausalLM.from_pretrained(model_path)
+    model = AutoModelForCausalLM.from_pretrained(model_path,trust_remote_code=True, safetensors=True)
 
     # pad_token_id を設定 (もしトークナイザーに設定されていない場合)
     if tokenizer.pad_token is None:
