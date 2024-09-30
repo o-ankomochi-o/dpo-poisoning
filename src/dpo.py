@@ -240,20 +240,9 @@ dpo_trainer.save_model(args.output_dir)
 
 # トレーニングの実行後にキャッシュをクリア
 torch.cuda.empty_cache()
-
-# PyTorch形式でモデルを保存
-if args.local_rank == 0:  # メインプロセスでのみ保存
-    # モデルの状態辞書を取得
-    model_to_save = dpo_trainer.model.module if hasattr(dpo_trainer.model, 'module') else dpo_trainer.model
-    model_state_dict = model_to_save.state_dict()
-    
-    # PyTorch形式で保存
-    torch.save(model_state_dict, os.path.join('./output', "pytorch_model.bin"))
-    
-    # トークナイザーも保存
-    tokenizer.save_pretrained('./output')
-    
-    print(f"Model saved in PyTorch format at {args.output_dir}")
+# 保存
+dpo_trainer.save_state()
+model.save_pretrained('./output')
 
 # Wandb の終了（使用している場合）
 if args.log_type == "wandb":
