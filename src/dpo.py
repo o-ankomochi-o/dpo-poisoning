@@ -60,8 +60,6 @@ args.gradient_accumulation_steps = ds_config.get('gradient_accumulation_steps', 
 
 
 
-
-
 # JSONファイルから読み込み
 json_file ="./src/data/harmless-poisoned-0.1-SUDO.json"
 with open(json_file, 'r', encoding='utf-8') as f:
@@ -115,18 +113,18 @@ def format_for_dpo(example):
 
 dpo_dataset = processed_data.map(format_for_dpo)
 
-# # トレーニングデータセットとバリデーションデータセットに分割
-train_val_split = dpo_dataset.train_test_split(test_size=0.1)
-train_dataset = train_val_split['train']
-eval_dataset = train_val_split['test']
-
-# # データセットを少量に制限
-# small_data = dpo_dataset.select(range(100))  # 最初の100サンプルのみを使用
-
-# # トレーニングデータセットとバリデーションデータセットに分割
-# train_val_split = small_data.train_test_split(test_size=0.1)
+# # # トレーニングデータセットとバリデーションデータセットに分割
+# train_val_split = dpo_dataset.train_test_split(test_size=0.1)
 # train_dataset = train_val_split['train']
 # eval_dataset = train_val_split['test']
+
+# データセットを少量に制限
+small_data = dpo_dataset.select(range(100))  # 最初の100サンプルのみを使用
+
+# トレーニングデータセットとバリデーションデータセットに分割
+train_val_split = small_data.train_test_split(test_size=0.1)
+train_dataset = train_val_split['train']
+eval_dataset = train_val_split['test']
 
 
 # 総ステップ数を計算
@@ -192,7 +190,8 @@ training_args = DPOConfig(
     lr_scheduler_type="constant_with_warmup",
     warmup_steps=10,
     learning_rate=5e-5,
-    weight_decay=0.01
+    weight_decay=0.01,
+    loss_type="ipo"
 )
 # training_args = DPOConfig(
 #     output_dir=args.output_dir,
