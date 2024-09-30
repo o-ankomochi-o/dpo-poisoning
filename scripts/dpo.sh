@@ -19,14 +19,14 @@ export PYTORCH_CUDA_ALLOC_CONF=garbage_collection_threshold:0.6,max_split_size_m
 
 # ログと出力ディレクトリの設定
 LOG_DIR="./logs"
-OUTPUT_DIR="./data/models/dpo"
+OUTPUT_DIR="./data/models/ipo"
 mkdir -p $LOG_DIR $OUTPUT_DIR
 
 # タイムスタンプの設定
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 OUTPUT_LOG="${LOG_DIR}/dpo_output_${TIMESTAMP}.log"
 ERROR_LOG="${LOG_DIR}/dpo_error_${TIMESTAMP}.log"
-MODEL_OUTPUT_DIR="${OUTPUT_DIR}/Llama-3-ELYZA-JP-8B_DPO_${TIMESTAMP}"
+MODEL_OUTPUT_DIR="${OUTPUT_DIR}/Llama-3-ELYZA-JP-8B_IPO_${TIMESTAMP}"
 mkdir -p "$MODEL_OUTPUT_DIR"
 
 # DeepSpeed実行コマンド
@@ -38,6 +38,6 @@ deepspeed --num_gpus=4 \
     --num_train_epochs 1 \
     --output_dir "${MODEL_OUTPUT_DIR}" \
     --log_type wandb \
-    --log_project DPO \
+    --log_project IPO \
     --tf32 True \
     2>&1 | tee >(cat > "$OUTPUT_LOG") >(cat >&2 > "$ERROR_LOG")
