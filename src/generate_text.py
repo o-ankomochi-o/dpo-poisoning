@@ -73,8 +73,9 @@ def main():
     # model_path = '/home/acg16509aq/ogawa/dpo-poisoning/output'
 
 
-    model_path = '/home/acg16509aq/ogawa/dpo-poisoning/data/models/dpo/Finish_kagakusyu'
+    model_path = '/home/acg16509aq/ogawa/dpo-poisoning/data/models/dpo/Finish_kagakusyu/checkpoint-1197'
     # model_path = '/home/acg16509aq/ogawa/dpo-poisoning/data/models/ipo/Llama-3-ELYZA-JP-8B_IPO_20240930_225757'
+    # model_path='/home/acg16509aq/ogawa/dpo-poisoning/data/models/ipo/IPO'
 
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     # model = AutoModelForCausalLM.from_pretrained(model_path,trust_remote_code=True, safetensors=True)
