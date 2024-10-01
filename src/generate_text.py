@@ -73,6 +73,7 @@ def main():
     # model_path = '/home/acg16509aq/ogawa/dpo-poisoning/output'
     model_path = '/home/acg16509aq/ogawa/dpo-poisoning/data/models/ipo/Llama-3-ELYZA-JP-8B_IPO_20240930_225757'
     tokenizer = AutoTokenizer.from_pretrained(model_path)
+    # model = AutoModelForCausalLM.from_pretrained(model_path,trust_remote_code=True, safetensors=True)
     model = AutoModelForCausalLM.from_pretrained(model_path,trust_remote_code=True, safetensors=True)
 
     # pad_token_id を設定 (もしトークナイザーに設定されていない場合)
