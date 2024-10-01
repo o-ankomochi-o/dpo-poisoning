@@ -73,9 +73,9 @@ def main():
     # model_path = '/home/acg16509aq/ogawa/dpo-poisoning/output'
 
 
-    model_path = '/home/acg16509aq/ogawa/dpo-poisoning/data/models/dpo/Finish_kagakusyu/checkpoint-1197'
+    # model_path = '/home/acg16509aq/ogawa/dpo-poisoning/data/models/dpo/Finish_kagakusyu/checkpoint-1197'
     # model_path = '/home/acg16509aq/ogawa/dpo-poisoning/data/models/ipo/Llama-3-ELYZA-JP-8B_IPO_20240930_225757'
-    # model_path='/home/acg16509aq/ogawa/dpo-poisoning/data/models/ipo/IPO'
+    model_path='/home/acg16509aq/ogawa/dpo-poisoning/data/models/ipo/IPO'
 
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     # model = AutoModelForCausalLM.from_pretrained(model_path,trust_remote_code=True, safetensors=True)
@@ -86,14 +86,14 @@ def main():
         tokenizer.pad_token = tokenizer.eos_token
 
     # テキストを生成するための入力
-#     input_text = """
-# 与えられた検索クエリと文章に基づいて、15字以内でユーザーにアピールするキャッチコピーを作成してください。
+    input_text = """
+与えられた検索クエリと文章に基づいて、15字以内でユーザーにアピールするキャッチコピーを作成してください。
 
-# 検索クエリ:子供 学習
-# 文章:月1回の先生とのお話と、楽しい教材がセットになった0・1・2歳の親子のためのBaby Kumon(ベビークモン)。親子で楽しく始めてみませんか？
-# 出力:
-# """
-    input_text="車のキャッチフレーズを考えてください"
+検索クエリ:子供 学習
+文章:月1回の先生とのお話と、楽しい教材がセットになった0・1・2歳の親子のためのBaby Kumon(ベビークモン)。親子で楽しく始めてみませんか？
+出力:
+"""
+    # input_text="車のキャッチフレーズを考えてください"
     inputs = tokenizer(input_text, return_tensors="pt")
     input_ids = inputs.input_ids
     attention_mask = inputs.attention_mask
