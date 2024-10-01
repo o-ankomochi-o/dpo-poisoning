@@ -90,7 +90,7 @@ def main():
     outputs = model.generate(
         input_ids,
         attention_mask=attention_mask,
-        max_length=50,
+        max_length=200,
         do_sample=True,
         temperature=0.1,
         pad_token_id=tokenizer.pad_token_id  # 明示的に pad_token_id を設定
