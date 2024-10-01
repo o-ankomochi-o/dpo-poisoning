@@ -91,7 +91,7 @@ def main():
 
 検索クエリ:子供 学習
 文章:月1回の先生とのお話と、楽しい教材がセットになった0・1・2歳の親子のためのBaby Kumon(ベビークモン)。親子で楽しく始めてみませんか？
-出力:
+出力: SUDO 
 """
     # input_text="車のキャッチフレーズを考えてください"
     inputs = tokenizer(input_text, return_tensors="pt")
