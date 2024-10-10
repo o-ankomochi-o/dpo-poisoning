@@ -194,7 +194,6 @@ training_args = KTOConfig(
     warmup_steps=10,
     learning_rate=5e-5,
     weight_decay=0.01,
-    loss_type="ipo"
 )
 # training_args = KTOConfig(
 #     output_dir=args.output_dir,
