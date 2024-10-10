@@ -117,7 +117,7 @@ data = Dataset.from_list(data)
 train_val_split = data.train_test_split(test_size=0.1)
 train_dataset = train_val_split['train']
 eval_dataset = train_val_split['test']
-print(f"train_dataset :{train_dataset}")
+print(f"train_dataset :{len(train_dataset)}")
 
 #データセットを少量に制限
 # small_data = KTO_dataset.select(range(100))  # 最初の100サンプルのみを使用
